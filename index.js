@@ -1,9 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
-const PORT = 5000; // Set your desired port
+const PORT = 3000; // Set your desired port
 
 // Replace with your Supabase credentials
 const SUPABASE_URL = 'https://uexndhmkvkpnmfwxjhzd.supabase.co';
@@ -13,6 +14,16 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+const corsOptions = {
+    origin: 'http://localhost:4000', // replace with your allowed origin
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+    optionsSuccessStatus: 204,
+  };
+  
+  app.use(cors(corsOptions));
+  
 
 // Add route to insert data into "Room" table
 app.post('/insert-room', async (req, res) => {
