@@ -68,7 +68,6 @@ app.post('/insert-guest', async (req, res) => {
         'Country': data.country || '',
         'ZIP': data.zip || '',
         'RoomType': data.room_type || '',
-        'Extras': data.extras || {},
       }
     ], { returning: 'minimal' });
 
