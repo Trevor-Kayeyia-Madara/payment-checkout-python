@@ -81,6 +81,52 @@ app.post('/insert-guest', async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+app.post('/insert-transaction', async (req, res) => {
+  try {
+    const data = req.body;
+
+    // Assuming you have an array of services in the request body
+    const services = data.services || [];
+
+    const transactionsData = services.map((service) => ({
+      'TransactionDate': new Date(),
+      'GuestFolio': data.guest_folio || null,
+      'ItemCode': service.item_code || null,
+      'OrderNumber': generateOrderNumber(), // Custom function to generate OrderNumber
+      'Amount': service.amount || null,
+      'InvoiceNumber': generateInvoiceNumber(), // Custom function to generate InvoiceNumber
+    }));
+
+    const transactionsResponse = await supabase.from('Transactions').upsert(
+      transactionsData,
+      { returning: 'minimal' }
+    );
+
+    if (transactionsResponse.status === 201) {
+      res.json({ message: 'Transactions data inserted successfully' });
+    } else {
+      res.json({ message: 'Failed to insert transactions data' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+// Custom function to generate a unique OrderNumber
+function generateOrderNumber() {
+  // Implement your logic to generate a unique OrderNumber
+  // You can use a combination of timestamp, random numbers, or any other method
+  return `ORDER-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+}
+
+// Custom function to generate a unique InvoiceNumber
+function generateInvoiceNumber() {
+  // Implement your logic to generate a unique InvoiceNumber
+  // You can use a combination of timestamp, random numbers, or any other method
+  return `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+}
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
